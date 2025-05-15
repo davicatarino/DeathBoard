@@ -5,7 +5,6 @@ import RankingTable from './rankingTable';
 function NewPage() {
   return (
     <div className="h-5/6 grid place-items-center">
-      <VendedorForm/>
       <RankingTable/>
     </div>
   );
@@ -17,7 +16,7 @@ export const getServerSideProps = async (context) => {
 
   return {
     props: {
-      products: res.data,
+      ranking: res.data,
     },
   };
 };

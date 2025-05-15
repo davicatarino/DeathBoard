@@ -1,27 +1,30 @@
-// Path: /home/ubuntu/projects/nextjs-mysql-crud/src/app/api/vendedores/route.js
 import { NextResponse } from "next/server";
-import { pool } from "@/config/db"; // Ajuste o caminho se o db.js estiver em outro local
+import { pool, query } from "@/config/db"; // Ajuste o caminho se o db.js estiver em outro local
 
-export async function GET() {
+// GET: Buscar todos os vendedores ativos
+export async function GET(request) {
   try {
     const results = await pool.query("SELECT * FROM Vendedores WHERE ativo = TRUE ORDER BY nome ASC");
     return NextResponse.json(results);
   } catch (error) {
-    console.error(error); // Log do erro no servidor
+    console.error("Erro ao buscar vendedores:", error);
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Erro no servidor ao buscar vendedores." },
       { status: 500 }
     );
   }
 }
 
+// POST: Criar um novo vendedor
 export async function POST(request) {
   try {
     const data = await request.json();
+    const { nome, email, data_contratacao } = data;
+
     // Validação básica dos dados (pode ser mais robusta)
-    if (!data.nome) {
+    if (!nome || !email) {
       return NextResponse.json(
-        { message: "O nome do vendedor é obrigatório." },
+        { message: "Nome e email do vendedor são obrigatórios." },
         { status: 400 }
       );
     }
@@ -29,13 +32,20 @@ export async function POST(request) {
     const result = await pool.query("INSERT INTO Vendedores SET ?", data);
     
     return NextResponse.json({
-      ...data,
       id: result.insertId,
+      ...data,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar vendedor:", error);
+    // Verificar erro de entrada duplicada para o email
+    if (error.code === "ER_DUP_ENTRY") {
+        return NextResponse.json(
+            { message: "Email já cadastrado." },
+            { status: 409 } // 409 Conflict
+        );
+    }
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Erro no servidor ao criar vendedor." },
       { status: 500 }
     );
   }

@@ -1,18 +1,18 @@
-// Path: /home/ubuntu/projects/nextjs-mysql-crud/src/app/api/vendas/route.js
 import { NextResponse } from "next/server";
-import { pool } from "@/config/db";
+import { pool, query } from "@/config/db";
 
+// GET: Buscar todas as vendas (pode adicionar filtros por query params, ex: ?vendedor_id=1&mes=5&ano=2024)
 export async function GET(request) {
   try {
-    // Exemplo: buscar todas as vendas, talvez com join para nome do vendedor
-    // Você pode adicionar filtros por query params, ex: ?vendedor_id=1&mes=5&ano=2024
     const { searchParams } = new URL(request.url);
     const vendedorId = searchParams.get('vendedor_id');
+    // Adicionar mais filtros conforme necessário (mês, ano, etc.)
 
     let queryString = `
       SELECT 
         ve.*, 
-        v.nome as nome_vendedor 
+        v.nome AS nome_vendedor,
+        v.email AS email_vendedor
       FROM Vendas ve
       JOIN Vendedores v ON ve.vendedor_id = v.id
     `;
@@ -28,44 +28,43 @@ export async function GET(request) {
     const results = await pool.query(queryString, queryParams);
     return NextResponse.json(results);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao buscar vendas:", error);
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Erro no servidor ao buscar vendas." },
       { status: 500 }
     );
   }
 }
 
+// POST: Criar uma nova venda
 export async function POST(request) {
   try {
     const data = await request.json();
-    // Validação básica
-    if (!data.vendedor_id || !data.valor_venda || !data.data_venda) {
+    const { vendedor_id, valor_venda, data_venda, descricao } = data;
+
+    if (!vendedor_id || typeof valor_venda === 'undefined' || !data_venda) {
       return NextResponse.json(
-        { message: "Campos vendedor_id, valor_venda e data_venda são obrigatórios." },
+        { message: "ID do vendedor, valor da venda e data da venda são obrigatórios." },
         { status: 400 }
       );
     }
-
-    // Verificar se o vendedor existe e está ativo
-    const [vendedor] = await pool.query("SELECT ativo FROM Vendedores WHERE id = ?", [data.vendedor_id]);
-    if (!vendedor || !vendedor.ativo) {
-        return NextResponse.json(
-            { message: "Vendedor não encontrado ou inativo." },
-            { status: 404 }
-        );
+    
+    // Validar se o vendedor existe
+    const vendedorExistente = await pool.query("SELECT id FROM Vendedores WHERE id = ? AND ativo = TRUE", [vendedor_id]);
+    if (vendedorExistente.length === 0) {
+        return NextResponse.json({ message: "Vendedor não encontrado ou inativo." }, { status: 404 });
     }
 
     const result = await pool.query("INSERT INTO Vendas SET ?", data);
     
     return NextResponse.json({
-      ...data,
       id: result.insertId,
+      ...data,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar venda:", error);
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Erro no servidor ao criar venda." },
       { status: 500 }
     );
   }
