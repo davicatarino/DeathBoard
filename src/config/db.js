@@ -3,9 +3,9 @@ import mysql from "serverless-mysql";
 export const pool = mysql({
   config: {
     host: "localhost",
-    user: "root",
-    password: "123456",
-    port: 3307,
+    user: "davi",
+    password: "catarino",
+    port: 3306,
     database: "nextdb",
   },
 });
