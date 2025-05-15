@@ -1,5 +1,5 @@
 {
-  "name": "next-mysql-crud",
+  "name": "deathboard",
   "private": true,
   "scripts": {
     "dev": "next dev",
