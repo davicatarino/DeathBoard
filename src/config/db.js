@@ -6,10 +6,10 @@ import mysql from "serverless-mysql";
 export const pool = mysql({
   config: {
     host: process.env.MYSQL_HOST || "localhost",
-    user: process.env.MYSQL_USER || "davi", // Substitua pelo seu usuário do MySQL
+    user: process.env.MYSQL_USER || "root", // Substitua pelo seu usuário do MySQL
     password: process.env.MYSQL_PASSWORD || "catarino", // Substitua pela sua senha
     port: parseInt(process.env.MYSQL_PORT || "3306"),
-    database: process.env.MYSQL_DATABASE || "nextdb", // Substitua pelo nome do seu banco
+    database: process.env.MYSQL_DATABASE || "deathboard", // Substitua pelo nome do seu banco
   },
 });
 

@@ -119,7 +119,7 @@ function VendedorForm() {
   // Adapte o JSX do ProductForm.jsx original para os campos de Vendedor
   return (
     <div className="flex justify-center items-center h-full">
-      <form className="bg-gray-700 p-10 rounded-lg shadow-xl w-full max-w-md" onSubmit={handleSubmit}>
+      <form className="bg-gray-700 p-10 text-black rounded-lg shadow-xl w-full max-w-md" onSubmit={handleSubmit}>
         <header className="flex justify-between items-center mb-6">
           <h1 className="font-bold text-2xl">
             {params.id ? "Editar Vendedor" : "Novo Vendedor"}

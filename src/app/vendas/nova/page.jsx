@@ -79,7 +79,7 @@ export default function NovaVendaPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-8">Registrar Nova Venda</h1>
       {error && <p className="text-red-500 bg-red-100 p-3 rounded mb-4">Erro: {error}</p>}
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-8 shadow-md rounded-lg">
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white text-black p-8 shadow-md rounded-lg">
         <div className="mb-4">
           <label htmlFor="vendedorId" className="block text-sm font-medium text-gray-700">Vendedor</label>
           <select

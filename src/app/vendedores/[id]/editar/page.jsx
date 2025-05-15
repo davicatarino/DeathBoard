@@ -99,7 +99,7 @@ export default function EditarVendedorPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-8">Editar Vendedor (ID: {id})</h1>
       {error && <p className="text-red-500 bg-red-100 p-3 rounded mb-4">Erro ao salvar: {error}</p>}
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-8 shadow-md rounded-lg">
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto text-black bg-white p-8 shadow-md rounded-lg">
         <div className="mb-4">
           <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome Completo</label>
           <input
