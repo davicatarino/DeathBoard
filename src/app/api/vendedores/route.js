@@ -19,7 +19,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const data = await request.json();
-    const { nome, email, data_contratacao } = data;
+    const { nome, email, data_contratacao, foto_url } = data;
 
     // Validação básica dos dados (pode ser mais robusta)
     if (!nome || !email) {
@@ -29,7 +29,11 @@ export async function POST(request) {
       );
     }
 
-    const result = await pool.query("INSERT INTO Vendedores SET ?", data);
+    const result = await pool.query(
+      "INSERT INTO Vendedores (nome, email, data_contratacao, foto_url, ativo) VALUES (?, ?, ?, ?, TRUE)",
+      [nome, email, data_contratacao, foto_url]
+    )
+    
     
     return NextResponse.json({
       id: result.insertId,

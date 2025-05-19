@@ -23,14 +23,13 @@ export async function GET(request, { params }) {
   }
 }
 
-// PUT: Atualizar um vendedor por ID
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
     const data = await request.json();
-    const { nome, email, data_contratacao, ativo } = data;
+    const { nome, email, data_contratacao, ativo, foto_url } = data;
 
-    // Validação básica (pode ser mais robusta)
+    // Validação básica
     if (!nome && !email && typeof data_contratacao === "undefined" && typeof ativo === "undefined") {
       return NextResponse.json(
         { message: "Nenhum dado fornecido para atualização." },
@@ -38,18 +37,22 @@ export async function PUT(request, { params }) {
       );
     }
 
-    // Verifica se o vendedor existe antes de tentar atualizar
-    const vendedorExistente = await pool.query("SELECT * FROM Vendedores WHERE id = ?", [id]);
+    // Verifica se o vendedor existe antes de atualizar
+    const vendedorExistente = await pool.query("SELECT id FROM Vendedores WHERE id = ?", [id]);
     if (vendedorExistente.length === 0) {
-        return NextResponse.json({ message: "Vendedor não encontrado." }, { status: 404 });
+      return NextResponse.json({ message: "Vendedor não encontrado." }, { status: 404 });
     }
 
-    const result = await pool.query("UPDATE Vendedores SET ? WHERE id = ?", [data, id]);
+    // Executa a atualização com os valores corretos
+    const result = await pool.query(
+      "UPDATE Vendedores SET nome = ?, email = ?, data_contratacao = ?, foto_url = ?, ativo = ? WHERE id = ?",
+      [nome, email, data_contratacao, foto_url, ativo, id]
+    );
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        { message: "Vendedor não encontrado ou nenhum dado alterado." }, // Pode ser que o ID não exista
-        { status: 404 } // Ou 304 Not Modified se os dados forem os mesmos, mas 404 é mais simples aqui
+        { message: "Vendedor não encontrado ou nenhum dado alterado." },
+        { status: 404 }
       );
     }
 
@@ -59,10 +62,10 @@ export async function PUT(request, { params }) {
   } catch (error) {
     console.error(`Erro ao atualizar vendedor ${params.id}:`, error);
     if (error.code === "ER_DUP_ENTRY") {
-        return NextResponse.json(
-            { message: "Email já cadastrado por outro vendedor." },
-            { status: 409 } // 409 Conflict
-        );
+      return NextResponse.json(
+        { message: "Email já cadastrado por outro vendedor." },
+        { status: 409 }
+      );
     }
     return NextResponse.json(
       { message: error.message || "Erro no servidor ao atualizar vendedor." },

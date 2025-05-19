@@ -9,12 +9,13 @@ export async function GET(request) {
         v.id AS vendedor_id,
         v.nome AS nome_vendedor,
         v.email AS email_vendedor,
+        v.foto_url,
         COALESCE(SUM(ve.valor_venda), 0) AS faturamento_total,
         COUNT(ve.id) AS numero_de_vendas
       FROM Vendedores v
       LEFT JOIN Vendas ve ON v.id = ve.vendedor_id
       WHERE v.ativo = TRUE
-      GROUP BY v.id, v.nome, v.email
+      GROUP BY v.id, v.nome, v.email, v.foto_url
       ORDER BY faturamento_total DESC, numero_de_vendas DESC, nome_vendedor ASC;
     `;
 
@@ -28,4 +29,5 @@ export async function GET(request) {
     );
   }
 }
+
 

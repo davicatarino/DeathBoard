@@ -65,6 +65,21 @@ export default function RankingPage() {
                     {index + 1}º
                   </td>
                   <td className="px-6 py-4">
+  {vendedor.foto_url ? (
+    <img
+      src={vendedor.foto_url}
+      alt={`Foto de ${vendedor.nome_vendedor}`}
+      className="h-10 w-10 rounded-full object-cover"
+    />
+  ) : (
+    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    </div>
+  )}
+</td>
+                  <td className="px-6 py-4">
                     {vendedor.nome_vendedor}
                   </td>
                   <td className="px-6 py-4">

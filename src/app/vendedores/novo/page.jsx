@@ -16,6 +16,8 @@ export default function NovoVendedorPage() {
   const [dataContratacao, setDataContratacao] = useState('');
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [fotoUrl, setFotoUrl] = useState('');
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,8 @@ export default function NovoVendedorPage() {
         body: JSON.stringify({ 
           nome,
           email,
-          data_contratacao: dataContratacao || null, // Enviar null se vazio
+          foto_url: fotoUrl,
+          data_contratacao: dataContratacao || null,
         }),
       });
 
@@ -76,6 +79,19 @@ export default function NovoVendedorPage() {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
+        <div className="mb-4">
+  <label htmlFor="foto_url" className="block text-sm font-medium text-gray-700">URL da Foto do Vendedor</label>
+  <input
+    type="url"
+    id="foto_url"
+    name="foto_url"
+    value={fotoUrl}
+    onChange={(e) => setFotoUrl(e.target.value)}
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    placeholder="https://exemplo.com/imagem.jpg"
+  />
+</div>
+
         <div className="mb-6">
           <label htmlFor="dataContratacao" className="block text-sm font-medium text-gray-700">Data de Contratação</label>
           <input

@@ -2,17 +2,19 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter, useParams } from 'next/navigation'; // Corrected import for App Router
+import { useRouter, useParams } from 'next/navigation'; 
 import { useState, useEffect } from 'react';
 
 export default function EditarVendedorPage() {
   const router = useRouter();
-  const params = useParams(); // Hook to get route parameters
+  const params = useParams();  
   const { id } = params;
 
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [dataContratacao, setDataContratacao] = useState('');
+  const [fotoUrl, setFotoUrl] = useState('');
+
   const [ativo, setAtivo] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +34,8 @@ export default function EditarVendedorPage() {
           setNome(data.nome);
           setEmail(data.email);
           setDataContratacao(data.data_contratacao ? new Date(data.data_contratacao).toISOString().split('T')[0] : '');
+          setFotoUrl(data.foto_url || "");
+
           setAtivo(data.ativo);
           setError(null);
         } catch (err) {
@@ -60,6 +64,7 @@ export default function EditarVendedorPage() {
           nome,
           email,
           data_contratacao: dataContratacao || null,
+          foto_url: fotoUrl || null,
           ativo,
         }),
       });
@@ -69,7 +74,7 @@ export default function EditarVendedorPage() {
         throw new Error(errorData.message || 'Falha ao atualizar vendedor');
       }
       alert('Vendedor atualizado com sucesso!');
-      router.push('/vendedores'); // Redireciona para a lista de vendedores
+      router.push('/vendedores');  
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -91,7 +96,7 @@ export default function EditarVendedorPage() {
     );
   }
   
-  if (!id) { // Should not happen if routed correctly
+  if (!id) { 
       return <div className="container mx-auto p-4"><p className="text-center text-red-500 text-lg">ID do vendedor não fornecido.</p></div>;
   }
 
@@ -101,6 +106,20 @@ export default function EditarVendedorPage() {
       {error && <p className="text-red-500 bg-red-100 p-3 rounded mb-4">Erro ao salvar: {error}</p>}
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto text-black bg-white p-8 shadow-md rounded-lg">
         <div className="mb-4">
+  
+        <div className="mb-4">
+          <label htmlFor="foto_url" className="block text-sm font-medium text-gray-700">URL da Foto do Vendedor</label>
+          <input
+  type="url"
+  id="foto_url"
+  name="foto_url"
+  value={fotoUrl}
+  onChange={(e) => setFotoUrl(e.target.value)}
+  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+  placeholder="https://exemplo.com/imagem.jpg"
+/>
+        </div>
+
           <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome Completo</label>
           <input
             type="text"
