@@ -1,97 +1,150 @@
-import Link from "next/link";
+"use client";
 
-function Navbar() {
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+export default function Navbar() {
+  const pathname = usePathname();
+
+  // Função para verificar se um link está ativo
+  const isActive = (path) => {
+    if (path === '/' && pathname === '/') return true;
+    if (path !== '/' && pathname.startsWith(path)) return true;
+    return false;
+  };
+
   return (
-    <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
-      <div className="container flex flex-wrap justify-between items-center mx-auto px-7">
-        <Link href="/" className="flex">
-          <svg
-            className="mr-3 h-10"
-            viewBox="0 0 52 72"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M1.87695 53H28.7791C41.5357 53 51.877 42.7025 51.877 30H24.9748C12.2182 30 1.87695 40.2975 1.87695 53Z"
-              fill="#76A9FA"
-            />
-            <path
-              d="M0.000409561 32.1646L0.000409561 66.4111C12.8618 66.4111 23.2881 55.9849 23.2881 43.1235L23.2881 8.87689C10.9966 8.98066 1.39567 19.5573 0.000409561 32.1646Z"
-              fill="#A4CAFE"
-            />
-            <path
-              d="M50.877 5H23.9748C11.2182 5 0.876953 15.2975 0.876953 28H27.7791C40.5357 28 50.877 17.7025 50.877 5Z"
-              fill="#1C64F2"
-            />
-          </svg>
-          <span className="self-center text-lg font-semibold whitespace-nowrap dark:text-white">
-            Death Board
-          </span>
-        </Link>
-        <button
-          data-collapse-toggle="mobile-menu"
-          type="button"
-          className="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          aria-controls="mobile-menu-2"
-          aria-expanded="false"
-        >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-6 h-6"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-          <svg
-            className="hidden w-6 h-6"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-        </button>
-        <div className="hidden w-full md:block md:w-auto" id="mobile-menu">
-          <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
-            <li>
-              <Link
-                href="/vendedores"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+    <nav className="bg-gray-900 text-white shadow-lg">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-3">
+          {/* Logo e nome do app */}
+          <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center">
+              <svg 
+                className="h-8 w-8 text-blue-400" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
               >
-                Vendedores
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/vendas"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
+                />
+              </svg>
+              <span className="ml-2 text-xl font-bold">Death Board</span>
+            </Link>
+          </div>
+
+          {/* Links de navegação */}
+          <div className="hidden md:flex space-x-8">
+            <Link 
+              href="/vendedores" 
+              className={`hover:text-blue-300 transition-colors duration-200 ${
+                isActive('/vendedores') ? 'text-blue-400 font-medium' : ''
+              }`}
+            >
+              Vendedores
+            </Link>
+            <Link 
+              href="/sdrs" 
+              className={`hover:text-blue-300 transition-colors duration-200 ${
+                isActive('/sdrs') ? 'text-blue-400 font-medium' : ''
+              }`}
+            >
+              SDRs
+            </Link>
+            <Link 
+              href="/vendas" 
+              className={`hover:text-blue-300 transition-colors duration-200 ${
+                isActive('/vendas') ? 'text-blue-400 font-medium' : ''
+              }`}
+            >
+              Vendas
+            </Link>
+            <Link 
+              href="/reunioes" 
+              className={`hover:text-blue-300 transition-colors duration-200 ${
+                isActive('/reunioes') ? 'text-blue-400 font-medium' : ''
+              }`}
+            >
+              Reuniões
+            </Link>
+            <Link 
+              href="/ranking" 
+              className={`hover:text-blue-300 transition-colors duration-200 ${
+                isActive('/ranking') ? 'text-blue-400 font-medium' : ''
+              }`}
+            >
+              Ranking
+            </Link>
+          </div>
+
+          {/* Menu mobile (hamburger) */}
+          <div className="md:hidden">
+            <button className="mobile-menu-button">
+              <svg 
+                className="h-6 w-6" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
               >
-                Vendas
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/ranking"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Ranking
-              </Link>
-            </li>
-          </ul>
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4 6h16M4 12h16M4 18h16" 
+                />
+              </svg>
+            </button>
+          </div>
         </div>
+      </div>
+
+      {/* Menu mobile (dropdown) - Implementar lógica de toggle */}
+      <div className="mobile-menu hidden md:hidden">
+        <Link 
+          href="/vendedores" 
+          className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
+            isActive('/vendedores') ? 'bg-gray-800 text-blue-400' : ''
+          }`}
+        >
+          Vendedores
+        </Link>
+        <Link 
+          href="/sdrs" 
+          className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
+            isActive('/sdrs') ? 'bg-gray-800 text-blue-400' : ''
+          }`}
+        >
+          SDRs
+        </Link>
+        <Link 
+          href="/vendas" 
+          className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
+            isActive('/vendas') ? 'bg-gray-800 text-blue-400' : ''
+          }`}
+        >
+          Vendas
+        </Link>
+        <Link 
+          href="/reunioes" 
+          className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
+            isActive('/reunioes') ? 'bg-gray-800 text-blue-400' : ''
+          }`}
+        >
+          Reuniões
+        </Link>
+        <Link 
+          href="/ranking" 
+          className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
+            isActive('/ranking') ? 'bg-gray-800 text-blue-400' : ''
+          }`}
+        >
+          Ranking
+        </Link>
       </div>
     </nav>
   );
 }
-
-export default Navbar;
