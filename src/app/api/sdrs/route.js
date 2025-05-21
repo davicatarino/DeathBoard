@@ -1,64 +1,60 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/config/db";
 
-// GET: Listar todos os SDRs
+// GET: Buscar o ranking de SDRs
 export async function GET(request) {
   try {
-    const [results] = await pool.query(
-      "SELECT * FROM SDRs WHERE ativo = TRUE ORDER BY nome ASC"
-    );
+    const { searchParams } = new URL(request.url);
+    const data_inicio = searchParams.get("data_inicio");
+    const data_fim = searchParams.get("data_fim");
+
+    const queryString = `
+      SELECT 
+        s.id AS sdr_id,
+        s.nome AS nome_sdr,
+        s.email AS email_sdr,
+        s.foto_url,
+        COUNT(r.id) AS total_reunioes_agendadas,
+        SUM(CASE WHEN r.status = 'realizada' THEN 1 ELSE 0 END) AS total_reunioes_realizadas,
+        ROUND((SUM(CASE WHEN r.status = 'realizada' THEN 1 ELSE 0 END) / COUNT(r.id)) * 100, 2) AS taxa_conversao
+      FROM SDRs s
+      LEFT JOIN Reunioes r ON s.id = r.sdr_id
+      WHERE s.ativo = TRUE
+      ${data_inicio && data_fim ? `AND r.data_agendamento BETWEEN ? AND ?` : 
+        data_inicio ? `AND r.data_agendamento >= ?` : 
+        data_fim ? `AND r.data_agendamento <= ?` : ''}
+      GROUP BY s.id, s.nome, s.email, s.foto_url
+      ORDER BY total_reunioes_agendadas DESC, total_reunioes_realizadas DESC, nome_sdr ASC;
+    `;
+
+    const queryParams = [];
+    if (data_inicio && data_fim) {
+      queryParams.push(data_inicio, data_fim);
+    } else if (data_inicio) {
+      queryParams.push(data_inicio);
+    } else if (data_fim) {
+      queryParams.push(data_fim);
+    }
+
+    const [results] = await pool.query(queryString, queryParams);
     
-    // Converter para objetos JavaScript simples para evitar problemas de serialização
+    // Converter os resultados para objetos JavaScript simples
+    // para evitar problemas de serialização JSON
     const serializedResults = results.map(row => ({
-      id: Number(row.id),
-      nome: String(row.nome),
-      email: String(row.email),
+      sdr_id: Number(row.sdr_id),
+      nome_sdr: String(row.nome_sdr),
+      email_sdr: String(row.email_sdr),
       foto_url: row.foto_url ? String(row.foto_url) : null,
-      data_contratacao: row.data_contratacao ? row.data_contratacao.toISOString().split('T')[0] : null,
-      ativo: Boolean(row.ativo),
-      createdAt: row.createdAt ? row.createdAt.toISOString() : null
+      total_reunioes_agendadas: Number(row.total_reunioes_agendadas),
+      total_reunioes_realizadas: Number(row.total_reunioes_realizadas),
+      taxa_conversao: Number(row.taxa_conversao)
     }));
 
     return NextResponse.json(serializedResults);
   } catch (error) {
-    console.error("Erro ao listar SDRs:", error.message);
+    console.error("Erro ao buscar ranking de SDRs:", error.message);
     return NextResponse.json(
-      { message: "Erro ao listar SDRs", error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// POST: Criar um novo SDR
-export async function POST(request) {
-  try {
-    const { nome, email, foto_url, data_contratacao } = await request.json();
-
-    // Validação básica
-    if (!nome || !email) {
-      return NextResponse.json(
-        { message: "Nome e email são obrigatórios" },
-        { status: 400 }
-      );
-    }
-
-    const result = await pool.query(
-      "INSERT INTO SDRs (nome, email, foto_url, data_contratacao, ativo) VALUES (?, ?, ?, ?, TRUE)",
-      [nome, email, foto_url, data_contratacao]
-    );
-
-    return NextResponse.json({
-      id: result[0].insertId,
-      nome,
-      email,
-      foto_url,
-      data_contratacao,
-      ativo: true
-    }, { status: 201 });
-  } catch (error) {
-    console.error("Erro ao criar SDR:", error.message);
-    return NextResponse.json(
-      { message: "Erro ao criar SDR", error: error.message },
+      { message: "Erro no servidor ao buscar ranking de SDRs.", error: error.message },
       { status: 500 }
     );
   }
