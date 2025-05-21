@@ -8,10 +8,3 @@ export async function GET() {
   );
   return NextResponse.json(rows);
 }
-
-export async function POST(request) {
-  const { sdr_id, cliente, data_reuniao, status } = await request.json();
-  if (!sdr_id || !cliente || !data_reuniao) return NextResponse.json({ message: "Campos obrigatorios" }, { status: 400 });
-  const { insertId } = await query(`INSERT INTO Reunioes SET ?`, { sdr_id, cliente, data_reuniao, status: status || "AGENDADA" });
-  return NextResponse.json({ id: insertId, sdr_id, cliente, data_reuniao, status: status || "AGENDADA" });
-}

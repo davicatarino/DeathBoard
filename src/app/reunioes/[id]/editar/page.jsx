@@ -15,7 +15,6 @@ export default function EditarReuniaoPage() {
   useEffect(() => {
     fetch("/api/sdrs?ativo=true").then((r) => r.json()).then(setSdrs);
     fetch(`/api/reunioes/${id}`).then((r) => r.json()).then((d) => setForm({ sdr_id: d.sdr_id, cliente: d.cliente, data_reuniao: d.data_reuniao.slice(0,16), status: d.status })).catch((e) => setError("Nao encontrado"));
-
     setLoading(false);
   }, [id]);
 
