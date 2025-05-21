@@ -1,57 +1,42 @@
-import { NextResponse } from "next/server";
-import { pool, query } from "@/config/db"; // Ajuste o caminho se o db.js estiver em outro local
+import { NextResponse } from 'next/server';
+import { query } from '@/config/db';
 
-// GET: Buscar todos os vendedores ativos
+// GET – lista de vendedores (filtra ?ativo=true/false opcional)
 export async function GET(request) {
   try {
-    const results = await pool.query("SELECT * FROM Vendedores WHERE ativo = TRUE ORDER BY nome ASC");
-    return NextResponse.json(results);
-  } catch (error) {
-    console.error("Erro ao buscar vendedores:", error);
-    return NextResponse.json(
-      { message: error.message || "Erro no servidor ao buscar vendedores." },
-      { status: 500 }
-    );
+    const { searchParams } = new URL(request.url);
+    const ativo = searchParams.get('ativo');
+
+    let sql = 'SELECT * FROM Vendedores';
+    const params = [];
+    if (ativo !== null) { sql += ' WHERE ativo = ?'; params.push(ativo === 'true'); }
+    sql += ' ORDER BY nome ASC';
+
+    return NextResponse.json(await query(sql, params));
+  } catch (err) {
+    console.error('Erro ao buscar vendedores:', err.message);
+    return NextResponse.json({ message: 'Erro no servidor', error: err.message }, { status: 500 });
   }
 }
 
-// POST: Criar um novo vendedor
+// POST – cria vendedor
 export async function POST(request) {
   try {
-    const data = await request.json();
-    const { nome, email, data_contratacao, foto_url } = data;
+    const { nome, email, foto_url } = await request.json();
+    if (!nome || !email)
+      return NextResponse.json({ message: 'Nome e e-mail obrigatórios' }, { status: 400 });
 
-    // Validação básica dos dados (pode ser mais robusta)
-    if (!nome || !email) {
-      return NextResponse.json(
-        { message: "Nome e email do vendedor são obrigatórios." },
-        { status: 400 }
-      );
-    }
+    const dup = await query('SELECT 1 FROM Vendedores WHERE email = ?', [email]);
+    if (dup.length)
+      return NextResponse.json({ message: 'Email já cadastrado.' }, { status: 409 });
 
-    const result = await pool.query(
-      "INSERT INTO Vendedores (nome, email, data_contratacao, foto_url, ativo) VALUES (?, ?, ?, ?, TRUE)",
-      [nome, email, data_contratacao, foto_url]
-    )
-    
-    
-    return NextResponse.json({
-      id: result.insertId,
-      ...data,
+    const { insertId } = await query('INSERT INTO Vendedores SET ?', {
+      nome, email, foto_url: foto_url ?? null, ativo: true,
     });
-  } catch (error) {
-    console.error("Erro ao criar vendedor:", error);
-    // Verificar erro de entrada duplicada para o email
-    if (error.code === "ER_DUP_ENTRY") {
-        return NextResponse.json(
-            { message: "Email já cadastrado." },
-            { status: 409 } // 409 Conflict
-        );
-    }
-    return NextResponse.json(
-      { message: error.message || "Erro no servidor ao criar vendedor." },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ id: insertId, nome, email, foto_url: foto_url ?? null, ativo: true });
+  } catch (err) {
+    console.error('Erro ao criar vendedor:', err.message);
+    return NextResponse.json({ message: 'Erro no servidor', error: err.message }, { status: 500 });
   }
 }
-

@@ -1,61 +1,51 @@
-import { NextResponse } from "next/server";
-import { pool } from "@/config/db";
+import { NextResponse } from 'next/server';
+import { query } from '@/config/db';
 
-// GET: Buscar o ranking de SDRs
 export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const start = searchParams.get('data_inicio');
+  const end = searchParams.get('data_fim');
+  let joinDate = '';
+  const params = [];
+  if (start && end) {
+    joinDate = ' AND r.data_reuniao BETWEEN ? AND ?';
+    params.push(start, end);
+  } else if (start) {
+    joinDate = ' AND r.data_reuniao >= ?';
+    params.push(start);
+  } else if (end) {
+    joinDate = ' AND r.data_reuniao <= ?';
+    params.push(end);
+  }
+  const sql = `
+    SELECT
+      s.id AS sdr_id,
+      s.nome AS nome_sdr,
+      s.email AS email_sdr,
+      s.foto_url,
+      COUNT(r.id) AS total_reunioes_agendadas,
+      SUM(r.status = 'REALIZADA') AS total_reunioes_realizadas,
+      ROUND(100 * SUM(r.status = 'REALIZADA') / NULLIF(COUNT(r.id),0), 2) AS taxa_conversao
+    FROM SDRs s
+    LEFT JOIN Reunioes r
+      ON s.id = r.sdr_id
+      ${joinDate}
+    WHERE s.ativo = TRUE
+    GROUP BY s.id
+    ORDER BY taxa_conversao DESC, total_reunioes_agendadas DESC, s.nome ASC
+  `;
   try {
-    const { searchParams } = new URL(request.url);
-    const data_inicio = searchParams.get("data_inicio");
-    const data_fim = searchParams.get("data_fim");
-
-    const queryString = `
-      SELECT 
-        s.id AS sdr_id,
-        s.nome AS nome_sdr,
-        s.email AS email_sdr,
-        s.foto_url,
-        COUNT(r.id) AS total_reunioes_agendadas,
-        SUM(CASE WHEN r.status = 'realizada' THEN 1 ELSE 0 END) AS total_reunioes_realizadas,
-        ROUND((SUM(CASE WHEN r.status = 'realizada' THEN 1 ELSE 0 END) / COUNT(r.id)) * 100, 2) AS taxa_conversao
-      FROM SDRs s
-      LEFT JOIN Reunioes r ON s.id = r.sdr_id
-      WHERE s.ativo = TRUE
-      ${data_inicio && data_fim ? `AND r.data_agendamento BETWEEN ? AND ?` : 
-        data_inicio ? `AND r.data_agendamento >= ?` : 
-        data_fim ? `AND r.data_agendamento <= ?` : ''}
-      GROUP BY s.id, s.nome, s.email, s.foto_url
-      ORDER BY total_reunioes_agendadas DESC, total_reunioes_realizadas DESC, nome_sdr ASC;
-    `;
-
-    const queryParams = [];
-    if (data_inicio && data_fim) {
-      queryParams.push(data_inicio, data_fim);
-    } else if (data_inicio) {
-      queryParams.push(data_inicio);
-    } else if (data_fim) {
-      queryParams.push(data_fim);
-    }
-
-    const [results] = await pool.query(queryString, queryParams);
-    
-    // Converter os resultados para objetos JavaScript simples
-    // para evitar problemas de serialização JSON
-    const serializedResults = results.map(row => ({
-      sdr_id: Number(row.sdr_id),
-      nome_sdr: String(row.nome_sdr),
-      email_sdr: String(row.email_sdr),
-      foto_url: row.foto_url ? String(row.foto_url) : null,
-      total_reunioes_agendadas: Number(row.total_reunioes_agendadas),
-      total_reunioes_realizadas: Number(row.total_reunioes_realizadas),
-      taxa_conversao: Number(row.taxa_conversao)
-    }));
-
-    return NextResponse.json(serializedResults);
-  } catch (error) {
-    console.error("Erro ao buscar ranking de SDRs:", error.message);
-    return NextResponse.json(
-      { message: "Erro no servidor ao buscar ranking de SDRs.", error: error.message },
-      { status: 500 }
-    );
+    const rows = await query(sql, params);
+    return NextResponse.json(rows.map(r => ({
+      sdr_id: Number(r.sdr_id),
+      nome_sdr: String(r.nome_sdr),
+      email_sdr: String(r.email_sdr),
+      foto_url: r.foto_url ?? null,
+      total_reunioes_agendadas: Number(r.total_reunioes_agendadas),
+      total_reunioes_realizadas: Number(r.total_reunioes_realizadas),
+      taxa_conversao: Number(r.taxa_conversao)
+    })));
+  } catch (err) {
+    return NextResponse.json({ message: 'Erro no servidor', error: err.message }, { status: 500 });
   }
 }
