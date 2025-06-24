@@ -54,45 +54,60 @@ export default function EditarSDRPage() {
     }
   }
 
-  if (loading) return <p className="p-4">Carregando…</p>;
+  if (loading) return (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <span className="ml-4 text-lg text-gray-300">Carregando…</span>
+    </div>
+  );
   if (error)   return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <div className="max-w-lg mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Editar SDR</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="nome"
-          placeholder="Nome"
-          value={form.nome}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="E‑mail"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="url"
-          name="foto_url"
-          placeholder="URL da foto (opcional)"
-          value={form.foto_url}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-        <label className="flex items-center gap-2">
+      <h1 className="text-2xl font-bold mb-4 text-gray-100">Editar SDR</h1>
+      <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Nome</label>
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome"
+            value={form.nome}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">E‑mail</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="E‑mail"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">URL da foto (opcional)</label>
+          <input
+            type="url"
+            name="foto_url"
+            placeholder="URL da foto"
+            value={form.foto_url}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+          />
+        </div>
+        <label className="flex items-center gap-2 text-gray-200">
           <input
             type="checkbox"
             name="ativo"
             checked={form.ativo}
             onChange={handleChange}
+            className="accent-blue-600"
           />
           Ativo
         </label>
@@ -100,7 +115,7 @@ export default function EditarSDRPage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50 font-semibold transition-all"
         >
           {saving ? "Salvando…" : "Salvar alterações"}
         </button>

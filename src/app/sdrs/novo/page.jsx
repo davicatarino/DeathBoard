@@ -35,39 +35,48 @@ export default function NovoSDRPage() {
 
   return (
     <div className="max-w-lg mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Adicionar novo SDR</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="nome"
-          placeholder="Nome"
-          value={form.nome}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="E‑mail"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="url"
-          name="foto_url"
-          placeholder="URL da foto (opcional)"
-          value={form.foto_url}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
+      <h1 className="text-2xl font-bold mb-4 text-gray-100">Adicionar novo SDR</h1>
+      <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Nome</label>
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome"
+            value={form.nome}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">E‑mail</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="E‑mail"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">URL da foto (opcional)</label>
+          <input
+            type="url"
+            name="foto_url"
+            placeholder="URL da foto"
+            value={form.foto_url}
+            onChange={handleChange}
+            className="w-full border p-2 rounded bg-gray-900 text-gray-100"
+          />
+        </div>
         {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50 font-semibold transition-all"
         >
           {loading ? "Salvando…" : "Salvar"}
         </button>

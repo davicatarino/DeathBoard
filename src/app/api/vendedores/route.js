@@ -5,7 +5,10 @@ import { query } from '@/config/db';
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const ativo = searchParams.get('ativo');
+    let ativo = searchParams.get('ativo');
+
+    // Por padrão, só retorna ativos se não especificado
+    if (ativo === null) ativo = 'true';
 
     let sql = 'SELECT * FROM Vendedores';
     const params = [];

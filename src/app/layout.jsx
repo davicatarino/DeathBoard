@@ -12,10 +12,10 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR">
       <body>
         <Navbar />
-        <div className="dark:text-white h-[calc(100vh-5rem)] p-10">
+        <div className="dark:text-white h-[calc(100vh-5rem)] p-2 md:p-10">
           <div className="container mx-auto h-full">{children}</div>
         </div>
-        <Toaster />
+        <Toaster position="top-right" toastOptions={{ style: { background: "#1e293b", color: "#fff" } }} />
       </body>
     </html>
   );
