@@ -2,15 +2,21 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Função para verificar se um link está ativo
   const isActive = (path) => {
     if (path === '/' && pathname === '/') return true;
     if (path !== '/' && pathname.startsWith(path)) return true;
     return false;
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
@@ -83,7 +89,11 @@ export default function Navbar() {
 
           {/* Menu mobile (hamburger) */}
           <div className="md:hidden">
-            <button className="mobile-menu-button">
+            <button 
+              className="mobile-menu-button"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
               <svg 
                 className="h-6 w-6" 
                 fill="none" 
@@ -102,13 +112,14 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menu mobile (dropdown) - Implementar lógica de toggle */}
-      <div className="mobile-menu hidden md:hidden">
+      {/* Menu mobile (dropdown) */}
+      <div className={`mobile-menu md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
         <Link 
           href="/vendedores" 
           className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
             isActive('/vendedores') ? 'bg-gray-800 text-blue-400' : ''
           }`}
+          onClick={() => setIsMobileMenuOpen(false)}
         >
           Vendedores
         </Link>
@@ -117,6 +128,7 @@ export default function Navbar() {
           className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
             isActive('/sdrs') ? 'bg-gray-800 text-blue-400' : ''
           }`}
+          onClick={() => setIsMobileMenuOpen(false)}
         >
           SDRs
         </Link>
@@ -125,6 +137,7 @@ export default function Navbar() {
           className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
             isActive('/vendas') ? 'bg-gray-800 text-blue-400' : ''
           }`}
+          onClick={() => setIsMobileMenuOpen(false)}
         >
           Vendas
         </Link>
@@ -133,6 +146,7 @@ export default function Navbar() {
           className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
             isActive('/reunioes') ? 'bg-gray-800 text-blue-400' : ''
           }`}
+          onClick={() => setIsMobileMenuOpen(false)}
         >
           Reuniões
         </Link>
@@ -141,6 +155,7 @@ export default function Navbar() {
           className={`block py-2 px-4 text-sm hover:bg-gray-800 ${
             isActive('/ranking') ? 'bg-gray-800 text-blue-400' : ''
           }`}
+          onClick={() => setIsMobileMenuOpen(false)}
         >
           Ranking
         </Link>

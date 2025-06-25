@@ -1,25 +1,43 @@
 import mysql from 'serverless-mysql';
 
-// ---------- Pool global e reutilizável -----------
-const config = {
-  host:     process.env.MYSQL_HOST     || 'localhost',
-  user:     process.env.MYSQL_USER     || 'root',
-  password: process.env.MYSQL_PASSWORD || 'catarino',
-  port:     Number(process.env.MYSQL_PORT || '3306'),
+const db = mysql({
+  config: {
+    host: process.env.MYSQL_HOST || 'localhost',
+    port: process.env.MYSQL_PORT || 3306,
   database: process.env.MYSQL_DATABASE || 'deathboard',
-};
+    user: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_PASSWORD || '',
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  },
+});
 
-const pool = globalThis._mysqlPool ?? mysql({ config });
-if (!globalThis._mysqlPool) globalThis._mysqlPool = pool;
-
-// ---------- Helper de query seguro -----------
-export async function query(sql, values = []) {
+// Função para testar a conexão
+export async function testConnection() {
   try {
-    return await pool.query(sql, values);
-  } catch (err) {
-    console.error('MySQL error:', { sql, values, message: err.message });
-    throw err;
+    await db.query('SELECT 1');
+    console.log('✅ Conexão com banco de dados estabelecida com sucesso');
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao conectar com banco de dados:', error.message);
+    return false;
   }
 }
 
-export { pool };        // acesso opcional baixo-nível
+// Função principal para executar queries
+export async function query(sql, values = []) {
+  try {
+    const results = await db.query(sql, values);
+    return results;
+  } catch (error) {
+    console.error('Erro na query:', error);
+    throw new Error(`Erro no banco de dados: ${error.message}`);
+  }
+}
+
+// Função para fechar a conexão (útil para testes)
+export async function end() {
+  await db.end();
+}
+
+export default db;
+

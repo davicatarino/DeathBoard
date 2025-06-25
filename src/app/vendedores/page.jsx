@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 async function fetchVendedores() {
   const res = await fetch('/api/vendedores', { cache: 'no-store' });
@@ -35,7 +36,7 @@ export default function VendedoresPage() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (confirm("Tem certeza que deseja desativar este vendedor? As vendas associadas não serão removidas.")) {
+    if (confirm("Tem certeza que deseja desativar este vendedor? Esta ação pode ser revertida editando o vendedor.")) {
       try {
         const res = await fetch(`/api/vendedores/${id}`, {
           method: 'DELETE',
@@ -46,80 +47,110 @@ export default function VendedoresPage() {
         }
         // Atualiza a lista de vendedores removendo o desativado
         setVendedores(vendedores.filter(v => v.id !== id));
-        alert("Vendedor desativado com sucesso!");
+        toast.success("Vendedor desativado com sucesso!");
       } catch (err) {
         console.error(err);
-        alert(`Erro ao desativar vendedor: ${err.message}`);
+        toast.error(`Erro ao desativar vendedor: ${err.message}`);
       }
     }
   };
 
   if (loading) {
-    return <div className="container mx-auto p-4"><p className="text-center text-lg">Carregando vendedores...</p></div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <span className="ml-4 text-lg text-gray-300">Carregando vendedores...</span>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4"><p className="text-center text-red-500 text-lg">Erro: {error}</p></div>;
+    return (
+      <div className="container mx-auto p-4">
+        <p className="text-center text-red-400 text-lg">Erro: {error}</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Gerenciar Vendedores</h1>
-        <Link href="/vendedores/novo" legacyBehavior>
-          <a className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Adicionar Novo Vendedor
-          </a>
+        <h1 className="text-3xl font-bold text-gray-100">Gerenciar Vendedores</h1>
+        <Link 
+          href="/vendedores/novo" 
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          Adicionar Novo Vendedor
         </Link>
       </div>
 
       {vendedores.length === 0 ? (
-        <p className="text-center text-gray-500">Nenhum vendedor cadastrado.</p>
+        <p className="text-center text-gray-400">Nenhum vendedor registrado.</p>
       ) : (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table className="min-w-full text-sm text-left text-gray-300">
+            <thead className="text-xs text-gray-300 uppercase bg-gray-800">
               <tr>
-              <th scope="col" className="px-6 py-3">Foto</th>
+                <th scope="col" className="px-6 py-3">ID</th>
                 <th scope="col" className="px-6 py-3">Nome</th>
                 <th scope="col" className="px-6 py-3">Email</th>
-                <th scope="col" className="px-6 py-3">Data de Contratação</th>
                 <th scope="col" className="px-6 py-3">Status</th>
+                <th scope="col" className="px-6 py-3">Data de Contratação</th>
                 <th scope="col" className="px-6 py-3"><span className="sr-only">Ações</span></th>
               </tr>
             </thead>
             <tbody>
               {vendedores.map((vendedor) => (
-                <tr key={vendedor.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {vendedor.foto_url ? (
-  <img src={vendedor.foto_url} alt={`Foto de ${vendedor.nome}`} className="h-20 w-20 rounded-full object-cover" />
-) : (
-  <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
-    <svg /* Ícone de placeholder */ className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-  </div>
-)}
-   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {vendedor.nome}
+                <tr key={vendedor.id} className="bg-gray-900 border-b border-gray-700 hover:bg-gray-800">
+                  <td className="px-6 py-4 font-medium text-gray-100">
+                    {vendedor.id}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      {vendedor.foto_url ? (
+                        <img 
+                          src={vendedor.foto_url} 
+                          alt={vendedor.nome} 
+                          className="h-10 w-10 rounded-full mr-3 object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center mr-3">
+                          <span className="text-gray-300 font-bold">
+                            {vendedor.nome.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      {vendedor.nome}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     {vendedor.email}
                   </td>
                   <td className="px-6 py-4">
-                    {vendedor.data_contratacao ? new Date(vendedor.data_contratacao).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/A'}
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      vendedor.ativo 
+                        ? 'bg-green-700 text-green-200' 
+                        : 'bg-red-700 text-red-200'
+                    }`}>
+                      {vendedor.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    {vendedor.ativo ? <span className="text-green-500">Ativo</span> : <span className="text-red-500">Inativo</span>}
+                    {vendedor.data_contratacao 
+                      ? new Date(vendedor.data_contratacao).toLocaleDateString('pt-BR') 
+                      : 'N/A'
+                    }
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
-                    <Link href={`/vendedores/${vendedor.id}/editar`} legacyBehavior>
-                      <a className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Editar</a>
+                    <Link 
+                      href={`/vendedores/${vendedor.id}/editar`} 
+                      className="font-medium text-blue-400 hover:text-blue-300 hover:underline"
+                    >
+                      Editar
                     </Link>
                     <button 
                       onClick={() => handleDelete(vendedor.id)} 
-                      className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                      disabled={!vendedor.ativo} // Desabilita se já estiver inativo
+                      className="font-medium text-red-400 hover:text-red-300 hover:underline"
                     >
                       Desativar
                     </button>
@@ -131,8 +162,11 @@ export default function VendedoresPage() {
         </div>
       )}
       <div className="mt-8">
-        <Link href="/" legacyBehavior>
-            <a className="text-blue-500 hover:underline">&larr; Voltar para Home</a>
+        <Link 
+          href="/" 
+          className="text-blue-400 hover:text-blue-300 hover:underline"
+        >
+          &larr; Voltar para Home
         </Link>
       </div>
     </div>

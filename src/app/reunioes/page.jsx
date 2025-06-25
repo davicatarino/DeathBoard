@@ -36,13 +36,12 @@ export default function ReunioesPage() {
     <div className="p-2 md:p-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
         <h1 className="text-2xl font-bold text-gray-100">Reuniões</h1>
-        <Link href="/reunioes/novo" legacyBehavior>
-          <a
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition-all"
-            title="Agendar nova reunião"
-          >
-            Nova Reunião
-          </a>
+        <Link 
+          href="/reunioes/novo" 
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition-all"
+          title="Agendar nova reunião"
+        >
+          Nova Reunião
         </Link>
       </div>
       <div className="overflow-x-auto rounded-lg shadow">
@@ -76,13 +75,12 @@ export default function ReunioesPage() {
                   </span>
                 </td>
                 <td className="p-3">
-                  <Link href={`/reunioes/${r.id}/editar`} legacyBehavior>
-                    <a
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm shadow transition-all"
-                      title="Editar reunião"
-                    >
-                      Editar
-                    </a>
+                  <Link 
+                    href={`/reunioes/${r.id}/editar`} 
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm shadow transition-all"
+                    title="Editar reunião"
+                  >
+                    Editar
                   </Link>
                 </td>
               </tr>

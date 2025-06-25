@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { pool, query } from "@/config/db";
+import { query } from "@/config/db";
 
 // GET: Buscar todas as vendas (pode adicionar filtros por query params, ex: ?vendedor_id=1&mes=5&ano=2024)
 export async function GET(request) {
@@ -25,7 +25,7 @@ export async function GET(request) {
 
     queryString += " ORDER BY ve.data_venda DESC";
 
-    const results = await pool.query(queryString, queryParams);
+    const results = await query(queryString, queryParams);
     return NextResponse.json(results);
   } catch (error) {
     console.error("Erro ao buscar vendas:", error);
@@ -50,12 +50,12 @@ export async function POST(request) {
     }
     
     // Validar se o vendedor existe
-    const vendedorExistente = await pool.query("SELECT id FROM Vendedores WHERE id = ? AND ativo = TRUE", [vendedor_id]);
+    const vendedorExistente = await query("SELECT id FROM Vendedores WHERE id = ? AND ativo = TRUE", [vendedor_id]);
     if (vendedorExistente.length === 0) {
         return NextResponse.json({ message: "Vendedor não encontrado ou inativo." }, { status: 404 });
     }
 
-    const result = await pool.query("INSERT INTO Vendas SET ?", data);
+    const result = await query("INSERT INTO Vendas SET ?", data);
     
     return NextResponse.json({
       id: result.insertId,

@@ -238,8 +238,11 @@ export default function RankingPage() {
       </div>
 
       <div className="mt-8">
-        <Link href="/" legacyBehavior>
-          <a className="text-blue-500 hover:underline">&larr; Voltar para Home</a>
+        <Link 
+          href="/" 
+          className="text-blue-400 hover:text-blue-300 hover:underline"
+        >
+          &larr; Voltar para Home
         </Link>
       </div>
     </div>

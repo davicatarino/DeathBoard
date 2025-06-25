@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function SDRsPage() {
   const [sdrs, setSDRs] = useState([]);
@@ -43,71 +44,105 @@ export default function SDRsPage() {
       
       // Atualiza a lista após desativar
       fetchSDRs();
+      toast.success('SDR desativado com sucesso!');
     } catch (err) {
       console.error(err);
-      alert('Erro ao desativar SDR');
+      toast.error('Erro ao desativar SDR');
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <span className="ml-4 text-lg text-gray-300">Carregando SDRs...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4">
+        <p className="text-center text-red-400 text-lg">Erro: {error}</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">SDRs</h1>
-        <Link href="/sdrs/novo" legacyBehavior>
-          <a className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Adicionar SDR
-          </a>
+        <h1 className="text-3xl font-bold text-gray-100">SDRs</h1>
+        <Link 
+          href="/sdrs/novo" 
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          Adicionar SDR
         </Link>
       </div>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-
-      {loading ? (
-        <p className="text-center py-8">Carregando SDRs...</p>
-      ) : sdrs.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead className="bg-gray-800 text-white">
+      {sdrs.length === 0 ? (
+        <p className="text-center text-gray-400">Nenhum SDR encontrado.</p>
+      ) : (
+        <div className="overflow-x-auto shadow-md sm:rounded-lg">
+          <table className="min-w-full text-sm text-left text-gray-300">
+            <thead className="text-xs text-gray-300 uppercase bg-gray-800">
               <tr>
-                <th className="py-3 px-4 text-left">Nome</th>
-                <th className="py-3 px-4 text-left">Email</th>
-                <th className="py-3 px-4 text-left">Data de Contratação</th>
-                <th className="py-3 px-4 text-center">Ações</th>
+                <th scope="col" className="px-6 py-3">ID</th>
+                <th scope="col" className="px-6 py-3">Nome</th>
+                <th scope="col" className="px-6 py-3">Email</th>
+                <th scope="col" className="px-6 py-3">Status</th>
+                <th scope="col" className="px-6 py-3">Data de Contratação</th>
+                <th scope="col" className="px-6 py-3 text-center">Ações</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody>
               {sdrs.map((sdr) => (
-                <tr key={sdr.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4 flex items-center">
-                    {sdr.foto_url ? (
-                      <img 
-                        src={sdr.foto_url} 
-                        alt={sdr.nome} 
-                        className="h-10 w-10 rounded-full mr-3 object-cover"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                        <span className="text-gray-600 font-bold">
-                          {sdr.nome.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    {sdr.nome}
+                <tr key={sdr.id} className="bg-gray-900 border-b border-gray-700 hover:bg-gray-800">
+                  <td className="px-6 py-4 font-medium text-gray-100">
+                    {sdr.id}
                   </td>
-                  <td className="py-3 px-4">{sdr.email}</td>
-                  <td className="py-3 px-4">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      {sdr.foto_url ? (
+                        <img 
+                          src={sdr.foto_url} 
+                          alt={sdr.nome} 
+                          className="h-10 w-10 rounded-full mr-3 object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center mr-3">
+                          <span className="text-gray-300 font-bold">
+                            {sdr.nome.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      {sdr.nome}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">{sdr.email}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      sdr.ativo 
+                        ? 'bg-green-700 text-green-200' 
+                        : 'bg-red-700 text-red-200'
+                    }`}>
+                      {sdr.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     {sdr.data_contratacao ? new Date(sdr.data_contratacao).toLocaleDateString('pt-BR') : '-'}
                   </td>
-                  <td className="py-3 px-4 text-center">
+                  <td className="px-6 py-4 text-center">
                     <div className="flex justify-center space-x-2">
-                      <Link href={`/sdrs/${sdr.id}/editar`} legacyBehavior>
-                        <a className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded text-sm">
-                          Editar
-                        </a>
+                      <Link 
+                        href={`/sdrs/${sdr.id}/editar`} 
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
+                      >
+                        Editar
                       </Link>
                       <button
                         onClick={() => handleDelete(sdr.id)}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm"
+                        className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
                       >
                         Desativar
                       </button>
@@ -118,13 +153,14 @@ export default function SDRsPage() {
             </tbody>
           </table>
         </div>
-      ) : (
-        <p className="text-center py-8">Nenhum SDR encontrado.</p>
       )}
 
       <div className="mt-8">
-        <Link href="/" legacyBehavior>
-          <a className="text-blue-500 hover:underline">&larr; Voltar para Home</a>
+        <Link 
+          href="/" 
+          className="text-blue-400 hover:text-blue-300 hover:underline"
+        >
+          &larr; Voltar para Home
         </Link>
       </div>
     </div>

@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 async function fetchVendas() {
   const res = await fetch('/api/vendas', { cache: 'no-store' });
@@ -46,39 +47,49 @@ export default function VendasPage() {
         }
         // Atualiza a lista de vendas removendo a deletada
         setVendas(vendas.filter(v => v.id !== id));
-        alert("Venda removida com sucesso!");
+        toast.success("Venda removida com sucesso!");
       } catch (err) {
         console.error(err);
-        alert(`Erro ao remover venda: ${err.message}`);
+        toast.error(`Erro ao remover venda: ${err.message}`);
       }
     }
   };
 
   if (loading) {
-    return <div className="container mx-auto p-4"><p className="text-center text-lg">Carregando vendas...</p></div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <span className="ml-4 text-lg text-gray-300">Carregando vendas...</span>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4"><p className="text-center text-red-500 text-lg">Erro: {error}</p></div>;
+    return (
+      <div className="container mx-auto p-4">
+        <p className="text-center text-red-400 text-lg">Erro: {error}</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Gerenciar Vendas</h1>
-        <Link href="/vendas/nova" legacyBehavior>
-          <a className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Adicionar Nova Venda
-          </a>
+        <h1 className="text-3xl font-bold text-gray-100">Gerenciar Vendas</h1>
+        <Link 
+          href="/vendas/nova" 
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          Adicionar Nova Venda
         </Link>
       </div>
 
       {vendas.length === 0 ? (
-        <p className="text-center text-gray-500">Nenhuma venda registrada.</p>
+        <p className="text-center text-gray-400">Nenhuma venda registrada.</p>
       ) : (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table className="min-w-full text-sm text-left text-gray-300">
+            <thead className="text-xs text-gray-300 uppercase bg-gray-800">
               <tr>
                 <th scope="col" className="px-6 py-3">ID Venda</th>
                 <th scope="col" className="px-6 py-3">Vendedor</th>
@@ -90,8 +101,8 @@ export default function VendasPage() {
             </thead>
             <tbody>
               {vendas.map((venda) => (
-                <tr key={venda.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <tr key={venda.id} className="bg-gray-900 border-b border-gray-700 hover:bg-gray-800">
+                  <td className="px-6 py-4 font-medium text-gray-100">
                     {venda.id}
                   </td>
                   <td className="px-6 py-4">
@@ -107,12 +118,15 @@ export default function VendasPage() {
                     {venda.descricao || 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
-                    <Link href={`/vendas/${venda.id}/editar`} legacyBehavior>
-                      <a className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Editar</a>
+                    <Link 
+                      href={`/vendas/${venda.id}/editar`} 
+                      className="font-medium text-blue-400 hover:text-blue-300 hover:underline"
+                    >
+                      Editar
                     </Link>
                     <button 
                       onClick={() => handleDelete(venda.id)} 
-                      className="font-medium text-red-600 dark:text-red-500 hover:underline"
+                      className="font-medium text-red-400 hover:text-red-300 hover:underline"
                     >
                       Remover
                     </button>
@@ -124,8 +138,11 @@ export default function VendasPage() {
         </div>
       )}
       <div className="mt-8">
-        <Link href="/" legacyBehavior>
-            <a className="text-blue-500 hover:underline">&larr; Voltar para Home</a>
+        <Link 
+          href="/" 
+          className="text-blue-400 hover:text-blue-300 hover:underline"
+        >
+          &larr; Voltar para Home
         </Link>
       </div>
     </div>

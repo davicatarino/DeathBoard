@@ -1,36 +1,161 @@
-### Nextjs MySQL CRUD
+# DeathBoard - Sistema de Ranking de Vendas
 
-Nextjs CRUD using MySQL and TailwindCSS
+Sistema completo para gerenciamento de equipes de vendas, incluindo vendedores, SDRs, reuniões e ranking de performance.
 
-## Getting Started
+## 🚀 Funcionalidades
 
-First, run the development server:
+- **Gestão de Vendedores**: Cadastro, edição e desativação de vendedores
+- **Gestão de SDRs**: Controle de Sales Development Representatives
+- **Gestão de Vendas**: Registro e acompanhamento de vendas
+- **Gestão de Reuniões**: Agendamento e controle de reuniões com clientes
+- **Ranking de Performance**: Rankings de vendedores e SDRs com filtros por período
+- **Interface Responsiva**: Design moderno e adaptável para mobile
 
+## 🛠️ Tecnologias
+
+- **Frontend**: Next.js 15, React 18, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Banco de Dados**: MySQL 8.0
+- **Deploy**: Docker & Docker Compose
+- **Notificações**: React Hot Toast
+
+## 📋 Pré-requisitos
+
+- Node.js 18+
+- Docker e Docker Compose
+- MySQL (se não usar Docker)
+
+## 🚀 Instalação
+
+### Opção 1: Docker (Recomendado)
+
+1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
+git clone <url-do-repositorio>
+cd DeathBoard
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+3. Execute com Docker Compose:
+```bash
+docker-compose up -d
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+4. Acesse a aplicação:
+```
+http://localhost:3001
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Opção 2: Desenvolvimento Local
 
-## Learn More
+1. Clone o repositório:
+```bash
+git clone <url-do-repositorio>
+cd DeathBoard
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Instale as dependências:
+```bash
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Configure o banco de dados MySQL e as variáveis de ambiente
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+4. Execute em modo desenvolvimento:
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+5. Acesse a aplicação:
+```
+http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔧 Configuração
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Banco de Dados
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=sua_senha
+MYSQL_DATABASE=deathboard
+
+# Ambiente
+NODE_ENV=development
+```
+
+### Estrutura do Banco de Dados
+
+O sistema criará automaticamente as tabelas necessárias:
+
+- `Vendedores`: Informações dos vendedores
+- `SDRs`: Sales Development Representatives
+- `Vendas`: Registro de vendas
+- `Reunioes`: Agendamento de reuniões
+
+## 📱 Uso
+
+1. **Home**: Visão geral e navegação para todas as funcionalidades
+2. **Vendedores**: Gerencie sua equipe de vendas
+3. **SDRs**: Controle os Sales Development Representatives
+4. **Vendas**: Registre e acompanhe vendas
+5. **Reuniões**: Agende e gerencie reuniões com clientes
+6. **Ranking**: Visualize rankings de performance com filtros
+
+## 🔄 Scripts Disponíveis
+
+```bash
+npm run dev          # Desenvolvimento
+npm run build        # Build de produção
+npm run start        # Servidor de produção
+npm run lint         # Verificação de código
+```
+
+## 🐳 Docker
+
+### Build da imagem:
+```bash
+docker build -t deathboard .
+```
+
+### Executar container:
+```bash
+docker run -p 3001:3001 deathboard
+```
+
+## 📊 Melhorias Implementadas
+
+- ✅ Padronização das APIs
+- ✅ Tema escuro consistente
+- ✅ Menu mobile funcional
+- ✅ Tratamento de erros melhorado
+- ✅ Notificações com toast
+- ✅ Loading states consistentes
+- ✅ Configuração de banco otimizada
+- ✅ Docker Compose melhorado
+
+## 🤝 Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 📞 Suporte
+
+Para suporte, envie um email para [seu-email@exemplo.com] ou abra uma issue no GitHub.

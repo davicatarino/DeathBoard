@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { pool, query } from "@/config/db";
+import { query } from "@/config/db";
 
 // GET: Buscar uma venda por ID
 export async function GET(request, { params }) {
   try {
     const { id } = params;
-    const results = await pool.query(
+    const results = await query(
       `SELECT ve.*, v.nome AS nome_vendedor, v.email AS email_vendedor 
        FROM Vendas ve 
        JOIN Vendedores v ON ve.vendedor_id = v.id 
@@ -45,20 +45,20 @@ export async function PUT(request, { params }) {
     }
 
     // Validar se a venda existe
-    const vendaExistente = await pool.query("SELECT id FROM Vendas WHERE id = ?", [id]);
+    const vendaExistente = await query("SELECT id FROM Vendas WHERE id = ?", [id]);
     if (vendaExistente.length === 0) {
         return NextResponse.json({ message: "Venda não encontrada." }, { status: 404 });
     }
 
     // Validar se o vendedor_id (se fornecido) existe e está ativo
     if (vendedor_id) {
-        const vendedorExistente = await pool.query("SELECT id FROM Vendedores WHERE id = ? AND ativo = TRUE", [vendedor_id]);
+        const vendedorExistente = await query("SELECT id FROM Vendedores WHERE id = ? AND ativo = TRUE", [vendedor_id]);
         if (vendedorExistente.length === 0) {
             return NextResponse.json({ message: "Vendedor não encontrado ou inativo." }, { status: 404 });
         }
     }
 
-    const result = await pool.query("UPDATE Vendas SET ? WHERE id = ?", [data, id]);
+    const result = await query("UPDATE Vendas SET ? WHERE id = ?", [data, id]);
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
@@ -67,7 +67,7 @@ export async function PUT(request, { params }) {
       );
     }
     
-    const vendaAtualizada = await pool.query(
+    const vendaAtualizada = await query(
         `SELECT ve.*, v.nome AS nome_vendedor, v.email AS email_vendedor 
          FROM Vendas ve 
          JOIN Vendedores v ON ve.vendedor_id = v.id 
@@ -89,7 +89,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = params;
-    const result = await pool.query("DELETE FROM Vendas WHERE id = ?", [id]);
+    const result = await query("DELETE FROM Vendas WHERE id = ?", [id]);
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
